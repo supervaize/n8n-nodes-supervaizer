@@ -28,14 +28,6 @@ export class SupervaizeEvent implements INodeType {
 		],
 		properties: [
 			{
-				displayName: 'Workspace Slug',
-				name: 'workspaceSlug',
-				type: 'string',
-				default: '',
-				required: true,
-				description: 'The slug of the workspace/team',
-			},
-			{
 				displayName: 'Event Type',
 				name: 'eventType',
 				type: 'options',
@@ -115,7 +107,7 @@ export class SupervaizeEvent implements INodeType {
 
 		for (let i = 0; i < items.length; i++) {
 			try {
-				const workspaceSlug = this.getNodeParameter('workspaceSlug', i) as string;
+				const workspaceSlug = await client.getWorkspaceSlug();
 				const eventType = this.getNodeParameter('eventType', i) as string;
 				const jobId = this.getNodeParameter('jobId', i) as string;
 				
@@ -155,7 +147,7 @@ export class SupervaizeEvent implements INodeType {
 					body.details.deliverables = deliverables;
 				}
 
-				const response = await client.request('POST', `/w/${workspaceSlug}/api/v1/ctrl-events/`, body);
+				const response = await client.request('POST', `/api/v1/ctrl-events/`, body);
 
 				returnData.push({
 					json: {

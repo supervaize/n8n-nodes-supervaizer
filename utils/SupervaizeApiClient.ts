@@ -20,6 +20,12 @@ export class SupervaizeApiClient {
 		const credentials = await this.node.getCredentials('supervaizeApi');
 		const baseUrl = credentials.baseUrl as string;
 		const apiKey = credentials.apiKey as string;
+		const workspaceSlug = credentials.workspaceSlug as string;
+
+		// Auto-prepend workspace path if endpoint starts with /api/
+		if (endpoint.startsWith('/api/')) {
+			endpoint = `/w/${workspaceSlug}${endpoint}`;
+		}
 
 		const options: OptionsWithUri = {
 			method,
@@ -35,5 +41,10 @@ export class SupervaizeApiClient {
 
 		// @ts-ignore
 		return this.node.helpers.request(options);
+	}
+	
+	async getWorkspaceSlug(): Promise<string> {
+		const credentials = await this.node.getCredentials('supervaizeApi');
+		return credentials.workspaceSlug as string;
 	}
 }

@@ -13,6 +13,7 @@ describe('SupervaizeEvent', () => {
 		node = new SupervaizeEvent();
 		mockClient = {
 			request: jest.fn().mockResolvedValue({ success: true }),
+			getWorkspaceSlug: jest.fn().mockResolvedValue('test-workspace'),
 		};
 		(SupervaizeApiClient as jest.Mock).mockImplementation(() => mockClient);
 
@@ -20,7 +21,6 @@ describe('SupervaizeEvent', () => {
 			getInputData: jest.fn().mockReturnValue([{ json: {} }]),
 			getNodeParameter: jest.fn((paramName: string) => {
 				const params: any = {
-					workspaceSlug: 'test-workspace',
 					eventType: 'agent.job.progress',
 					jobId: 'job-123',
 					payload: '{}',
@@ -39,7 +39,7 @@ describe('SupervaizeEvent', () => {
 
 		expect(mockClient.request).toHaveBeenCalledWith(
 			'POST',
-			'/w/test-workspace/api/v1/ctrl-events/',
+			'/api/v1/ctrl-events/',
 			expect.objectContaining({
 				event_type: 'agent.job.progress',
 				source: { job: 'job-123' },

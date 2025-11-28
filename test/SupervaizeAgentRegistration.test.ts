@@ -13,6 +13,7 @@ describe('SupervaizeAgentRegistration', () => {
 		node = new SupervaizeAgentRegistration();
 		mockClient = {
 			request: jest.fn().mockResolvedValue({ success: true, agent_id: '123' }),
+			getWorkspaceSlug: jest.fn().mockResolvedValue('test-workspace'),
 		};
 		(SupervaizeApiClient as jest.Mock).mockImplementation(() => mockClient);
 
@@ -20,7 +21,6 @@ describe('SupervaizeAgentRegistration', () => {
 			getInputData: jest.fn().mockReturnValue([{ json: {} }]),
 			getNodeParameter: jest.fn((paramName: string) => {
 				const params: any = {
-					workspaceSlug: 'test-workspace',
 					agentName: 'Test Agent',
 					agentSlug: 'test-agent',
 					description: 'Test Description',
@@ -42,7 +42,7 @@ describe('SupervaizeAgentRegistration', () => {
 
 		expect(mockClient.request).toHaveBeenCalledWith(
 			'POST',
-			'/w/test-workspace/api/v1/ctrl-events/',
+			'/api/v1/ctrl-events/',
 			expect.objectContaining({
 				event_type: 'server.register',
 				workspace: 'test-workspace',
