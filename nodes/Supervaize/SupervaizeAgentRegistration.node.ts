@@ -28,14 +28,6 @@ export class SupervaizeAgentRegistration implements INodeType {
 		],
 		properties: [
 			{
-				displayName: 'Workspace Slug',
-				name: 'workspaceSlug',
-				type: 'string',
-				default: '',
-				required: true,
-				description: 'The slug of the workspace/team',
-			},
-			{
 				displayName: 'Agent Name',
 				name: 'agentName',
 				type: 'string',
@@ -90,7 +82,7 @@ export class SupervaizeAgentRegistration implements INodeType {
 
 		for (let i = 0; i < items.length; i++) {
 			try {
-				const workspaceSlug = this.getNodeParameter('workspaceSlug', i) as string;
+				const workspaceSlug = await client.getWorkspaceSlug();
 				const agentName = this.getNodeParameter('agentName', i) as string;
 				const agentSlug = this.getNodeParameter('agentSlug', i) as string;
 				const description = this.getNodeParameter('description', i) as string;
@@ -133,7 +125,7 @@ export class SupervaizeAgentRegistration implements INodeType {
 					}
 				};
 
-				const response = await client.request('POST', `/w/${workspaceSlug}/api/v1/ctrl-events/`, payload);
+				const response = await client.request('POST', `/api/v1/ctrl-events/`, payload);
 
 				returnData.push({
 					json: {

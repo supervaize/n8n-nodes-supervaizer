@@ -27,5 +27,13 @@ export class SupervaizeApi implements ICredentialType {
 			required: true,
 			description: 'The base URL of the Supervaize instance',
 		},
+		{
+			displayName: 'Workspace Slug',
+			name: 'workspaceSlug',
+			type: 'string',
+			default: '',
+			required: true,
+			description: 'The slug of the workspace/team',
+		},
 	];
 }

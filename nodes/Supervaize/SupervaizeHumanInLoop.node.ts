@@ -38,14 +38,6 @@ export class SupervaizeHumanInLoop implements INodeType {
 		],
 		properties: [
 			{
-				displayName: 'Workspace Slug',
-				name: 'workspaceSlug',
-				type: 'string',
-				default: '',
-				required: true,
-				description: 'The slug of the workspace/team',
-			},
-			{
 				displayName: 'Job ID',
 				name: 'jobId',
 				type: 'string',
@@ -94,7 +86,7 @@ export class SupervaizeHumanInLoop implements INodeType {
 		// For simplicity, we take the first item's params.
 		const i = 0;
 		
-		const workspaceSlug = this.getNodeParameter('workspaceSlug', i) as string;
+		const workspaceSlug = await client.getWorkspaceSlug();
 		const jobId = this.getNodeParameter('jobId', i) as string;
 		const caseRef = this.getNodeParameter('caseRef', i) as string;
 		const title = this.getNodeParameter('questionTitle', i) as string;
@@ -128,7 +120,7 @@ export class SupervaizeHumanInLoop implements INodeType {
 			}
 		};
 
-		await client.request('POST', `/w/${workspaceSlug}/api/v1/ctrl-events/`, payload);
+		await client.request('POST', `/api/v1/ctrl-events/`, payload);
 
 		// Put execution to wait
 		const waitData = {
