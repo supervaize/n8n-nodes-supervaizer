@@ -1,33 +1,69 @@
 name: Node.js Package
 
-on:
-  release:
-    types: [created]
+on:                             
+  push:
+    branches:
+      - main
 
-permissions:             
-  contents: read        
-  id-token: write       
+permissions:                     
+  contents: write              
+  id-token: write
 
 jobs:
-  build:
+  build-and-publish:          
+    if: github.actor != 'github-actions[bot]' 
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - run: npm ci
-      - run: npm test
 
-  publish-npm:
-    needs: build
-    runs-on: ubuntu-latest
-    # environment: npm-publish  
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0         
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           registry-url: https://registry.npmjs.org/
-      - run: npm ci
-      - run: npm publish --access public
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests         
+        run: npm test
+
+      - name: Determine version bump type  
+        id: bump
+        run: |
+          range="${{ github.event.before }}..${{ github.sha }}"
+          echo "Checking commits in range: $range"
+          commits="$(git log --format=%B "$range" || true)"
+          echo "Commits:"
+          echo "$commits"
+
+          bump="patch"
+          if echo "$commits" | grep -q "\[Major\]"; then
+            bump="major"
+          elif echo "$commits" | grep -q "\[Minor\]"; then
+            bump="minor"
+          fi
+
+          echo "Selected bump: $bump"
+          echo "bump=$bump" >> "$GITHUB_OUTPUT"
+
+      - name: Bump package version         
+        run: |
+          bump="${{ steps.bump.outputs.bump }}"
+          echo "Running npm version $bump"
+          npm version "$bump"
+        # default behavior: updates package.json, creates git commit + tag
+
+      - name: Publish to npm (trusted publishing)   
+        run: npm publish --access public --provenance
+
+      - name: Push version bump commit and tags     
+        run: |
+          git push
+          git push --tags
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
