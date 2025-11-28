@@ -19,7 +19,7 @@ describe('SupervaizeEvent', () => {
 
 		mockExecuteFunctions = {
 			getInputData: jest.fn().mockReturnValue([{ json: {} }]),
-			getNodeParameter: jest.fn((paramName: string) => {
+			getNodeParameter: jest.fn((paramName: string, _index: number) => {
 				const params: any = {
 					eventType: 'agent.job.progress',
 					jobId: 'job-123',

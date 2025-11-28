@@ -19,7 +19,7 @@ describe('SupervaizeAgentRegistration', () => {
 
 		mockExecuteFunctions = {
 			getInputData: jest.fn().mockReturnValue([{ json: {} }]),
-			getNodeParameter: jest.fn((paramName: string) => {
+			getNodeParameter: jest.fn((paramName: string, _index: number) => {
 				const params: any = {
 					agentName: 'Test Agent',
 					agentSlug: 'test-agent',
